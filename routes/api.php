@@ -10,3 +10,4 @@ use App\Http\Controllers\UserController;
 
 //Rutas publicas
 Route::post('/users/new', [UserController::class, 'create']);
+Route::get('/users/getUser', [UserController::class, 'getUser']);

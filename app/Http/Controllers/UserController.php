@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function create(Request $request)
     {
-        // 1. Validaciones iniciales
+        //validaciones
         $validator = Validator::make($request->all(), [
             'identity' => 'required|numeric',
             'first_name' => 'required|string|max:20',
@@ -31,14 +31,14 @@ class UserController extends Controller
         }
 
         try {
-            // 2. Buscar si el usuario ya existe por Identidad (cedula de identidad)
+            //buscar si el usuario ya existe por la cedula de identidad
             $user = User::where('identity', $request->identity)
                         ->first();
 
-            // CASO A: EL USUARIO YA EXISTE
+            // 1er caso, el usuario ya existe
             if ($user) {
                 if ($user->email !== $request->email) {
-                    // Validar que el nuevo correo no lo tenga OTRO usuario distinto
+                    // Validar que el nuevo correo no lo tenga otro usuario distinto
                     $emailTaken = User::where('email', $request->email)
                                       ->where('id', '!=', $user->id)
                                       ->exists();
@@ -67,13 +67,13 @@ class UserController extends Controller
                 ], 200);
             }
 
-            // CASO B: EL USUARIO ES NUEVO
+            // 2do caso, el usuario no existe
             // Verificamos si el correo ya está registrado antes de intentar crearlo
             $emailExists = User::where('email', $request->email)->exists();
             if ($emailExists) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'El correo electrónico ingresado esta ocupado por otro usuario.'
+                    'message' => 'No puede registrarse con el correo de otro usuario'
                 ], 400);
             }
 
@@ -99,10 +99,26 @@ class UserController extends Controller
             ], 201);
 
         } catch (QueryException $e) {
-            // Capturamos cualquier error insospechado de BD y devolvemos un mensaje seguro
             return response()->json([
                 'status' => 'error',
                 'message' => 'Ocurrió un error al procesar la solicitud.'
+            ], 500);
+        }
+    }
+
+    public function getUser(){
+        
+        try{
+            $users = User::orderBy('id', 'desc')->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data'   => $users
+            ], 200);
+        } catch (QueryException $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ocurrió un error al obtener la lista de usuarios.'
             ], 500);
         }
     }
