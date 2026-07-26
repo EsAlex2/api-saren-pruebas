@@ -6,8 +6,15 @@ use App\Http\Controllers\UserController;
 
 /**
  * API Routes 
+ * Rutas privadas (utilizando middleware)
  */
 
-//Rutas publicas
-Route::post('/users/new', [UserController::class, 'create']);
-Route::get('/users/getUser', [UserController::class, 'getUser']);
+//
+
+/**
+ * metodo nativo de laravel para utilizar los middleware
+ */
+Route::middleware(['system.jwt'])->group(function () {
+    Route::post('/users/new', [UserController::class, 'create']);
+    Route::get('/users/getUser', [UserController::class, 'getUser']);
+});
