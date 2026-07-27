@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
 /**
- * API Routes 
+ * API Routes
  * Rutas privadas (utilizando middleware)
  */
 
@@ -17,4 +17,5 @@ use App\Http\Controllers\UserController;
 Route::middleware(['system.jwt'])->group(function () {
     Route::post('/users/new', [UserController::class, 'create']);
     Route::get('/users/getUser', [UserController::class, 'getUser']);
+    Route::post('/users/updateUser', [UserController::class, 'updateEmail']);
 });
